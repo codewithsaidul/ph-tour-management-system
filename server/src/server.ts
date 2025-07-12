@@ -3,6 +3,7 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 let server: Server;
 const port = envVars.PORT;
@@ -18,7 +19,10 @@ const startServer = async () => {
   }
 };
 
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 process.on("SIGTERM", () => {
   console.log("SIGTERM Signal recievd... Server shutting down..");
@@ -54,7 +58,6 @@ process.on("unhandledRejection", (err) => {
 
   process.exit(1);
 });
-
 
 process.on("uncaughtException", () => {
   console.log("Uncaught Exreption detected... Server shutting down..");
