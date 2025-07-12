@@ -14,8 +14,7 @@ export const globalErrorHandler = (
   let statusCode = httpStatus.BAD_REQUEST;
   let message = `Something went wrong!!`;
 
-
-  if (err instanceof AppError) {
+ if (err instanceof AppError) {
     statusCode = err.statusCode
     message = err.message
   } else if (err instanceof Error) {
@@ -23,6 +22,7 @@ export const globalErrorHandler = (
     message = err.message
   }
 
+// console.log("", err.name)
   res.status(statusCode).json({
     success: false,
     message,
