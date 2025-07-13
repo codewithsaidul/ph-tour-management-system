@@ -13,7 +13,7 @@ const createUser = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
-      message: "User created successfully!",
+      message: "User has been created successfully!",
       data: user,
     });
   }
@@ -50,7 +50,7 @@ const updateUserInfo = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
-      message: "User created successfully!",
+      message: "User has been updated successfully!",
       data: user,
     });
   }
