@@ -20,6 +20,7 @@ export interface IAUTHPROVIDER {
 }
 
 export interface IUSER {
+    _id?: Types.ObjectId;
     name: string;
     email: string;
     password?: string;
