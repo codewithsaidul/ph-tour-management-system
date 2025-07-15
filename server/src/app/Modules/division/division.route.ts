@@ -11,6 +11,7 @@ const router = Router();
 
 
 router.post("/create", validateRequest(divisonZodSchema), chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.createDivision)
+router.get("/", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.getAllDivision)
 
 
 export const divisionRouter = router
