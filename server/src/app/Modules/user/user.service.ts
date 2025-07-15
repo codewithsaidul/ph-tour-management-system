@@ -10,11 +10,11 @@ import { User } from "./user.model";
 const createUser = async (payload: Partial<IUSER>) => {
   const { email, password, ...other } = payload;
 
-  const isUserExist = await User.findOne({ email });
+  // const isUserExist = await User.findOne({ email });
 
-  if (isUserExist) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User Already Exist");
-  }
+  // if (isUserExist) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "User Already Exist");
+  // }
 
   const hashPassword = await bcrypt.hash(
     password as string,

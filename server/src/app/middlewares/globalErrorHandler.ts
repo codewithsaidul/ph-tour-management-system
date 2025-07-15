@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import httpStatus from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
+import httpStatus from "http-status-codes";
 import { envVars } from "../config/env";
 import { AppError } from "../errorHelpers/AppError";
+import { handleCastError } from "../helpers/handleCastError";
+import { handleDuplicateError } from "../helpers/handleDuplicateError";
+import { handleValidationError } from "../helpers/handleValidationError";
+import { handleZodError } from "../helpers/handleZodError";
+import { TErrorSources } from "../interfaces/error.types";
 
 export const globalErrorHandler = (
   err: any,
@@ -13,20 +18,54 @@ export const globalErrorHandler = (
 ) => {
   let statusCode = httpStatus.BAD_REQUEST;
   let message = `Something went wrong!!`;
+  let errorSources: TErrorSources[] = [];
 
- if (err instanceof AppError) {
-    statusCode = err.statusCode
-    message = err.message
-  } else if (err instanceof Error) {
-    statusCode =  httpStatus.BAD_REQUEST
-    message = err.message
+
+
+
+
+  // ================ duplicate error======================================
+  if (err.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  }
+  // =================== CastError ===============================================
+  else if (err.name === "CastError") {
+    const simplifiedError = handleCastError();
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  }
+  // =============== Zod error======================================
+  else if (err.name === "ZodError") {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+  }
+  // ===================== Mongoose Validation Error================================
+  else if (err.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+  }
+  // =============== Custom Error======================================
+  else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  }
+  // =============== Default Error===========================================
+  else if (err instanceof Error) {
+    statusCode = httpStatus.BAD_REQUEST;
+    message = err.message;
   }
 
-// console.log("", err.name)
   res.status(statusCode).json({
     success: false,
     message,
-    err,
+    errorSources,
+    err: envVars.NODE_ENV === "development" ? err : null,
     stack: envVars.NODE_ENV === "development" ? err.stack : null,
   });
 };
