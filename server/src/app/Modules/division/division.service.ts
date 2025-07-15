@@ -40,6 +40,32 @@ const getAllDivision = async () => {
 
 
 
+const updateDivision = async (divisionId: string, payload: Partial<IDivision>) => {
+    const isDivisionExist = await Division.findById(divisionId);
+
+
+    if (!isDivisionExist) {
+        throw new AppError(404, "This Division not found!!!")
+    }
+
+    if (isDivisionExist.name === payload.name) {
+        throw new AppError(400, "This Division already exist!!!")
+    }
+
+    if (isDivisionExist.slug === payload.slug) {
+        throw new AppError(400, "This Division already exist!!!")
+    }
+
+    const updateDivision = await Division.findByIdAndUpdate(divisionId, payload, {
+        new: true,
+        runValidators: true
+    });
+
+
+    return updateDivision
+}
+
+
 export const DivisionServices = {
-    createDivision, getAllDivision
+    createDivision, getAllDivision, updateDivision
 }
