@@ -1,4 +1,5 @@
-import { slugifyUnique } from "../../utils/slug";
+import { AppError } from "../../errorHelpers/AppError";
+import { isSlugExists, slugifyUnique } from "../../utils/slug";
 import { ITour } from "./tour.interface";
 import { Tour } from "./tour.model";
 
@@ -6,11 +7,7 @@ import { Tour } from "./tour.model";
 
 
 const createTour = async (payload: Partial<ITour>) => {
-  // function to check if slug exists in DB
-  async function isSlugExists(slug: string) {
-    const existing = await Tour.findOne({ slug });
-    return !!existing;
-  }
+
 
   const uniqueSlug = await slugifyUnique(payload.title as string, 50, isSlugExists);
 
@@ -38,6 +35,33 @@ const getAllTour = async (page = 1, limit = 10, sortBy = "createdAt", sort = "de
     }
 }
 
+
+const updateTour = async (tourId: string, payload: Partial<ITour>) => {
+    const isExist = await Tour.findById(tourId);
+
+    if (!isExist) {
+        throw new AppError(404, "This tour not available");
+    }
+
+    let slug = isExist.slug;
+    if (payload.title) {
+        slug = await slugifyUnique(payload.title as string, 50, isSlugExists);
+    }
+
+    const updateTourData = {
+        ...payload,
+        slug
+    }
+
+    const tour = await Tour.findByIdAndUpdate(tourId, updateTourData, {
+        new: true,
+        runValidators: true
+    })
+
+
+    return tour
+}
+
 export const TourServices = {
-  createTour, getAllTour
+  createTour, getAllTour, updateTour
 };

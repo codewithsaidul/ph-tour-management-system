@@ -4,7 +4,7 @@ import { createTourTypeZodSchema } from "./tourTypes/tourTypes.validation";
 import { chechAuth } from "../../middlewares/checkAuth";
 import { ROLE } from "../user/user.interface";
 import { TourTypeController } from "./tourTypes/tourTypes.controller";
-import { createToureZodSchema } from "./tour.validation";
+import { createToureZodSchema, updateToureZodSchema } from "./tour.validation";
 import { TourController } from "./tour.controller";
 
 
@@ -14,6 +14,7 @@ const router = Router();
 
 router.post("/create", validateRequest(createToureZodSchema), chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourController.createTour)
 router.get("/", chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourController.getAllTour)
+router.patch("/:id", validateRequest(updateToureZodSchema), chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourController.updateTour)
 
 
 // ================== tour type 

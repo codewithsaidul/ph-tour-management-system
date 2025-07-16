@@ -15,6 +15,7 @@ export const createToureZodSchema = z.object({
     .min(30, { message: "description to short. minimum 3 character" })
     .max(200, { message: "description cannot exceed 500 characters." })
     .optional(),
+  images: z.string({ invalid_type_error: "images must be string" }),
   location: z
     .string({ invalid_type_error: "location must be string" })
     .max(200, { message: "location cannot exceed 200 characters." })
@@ -27,7 +28,9 @@ export const createToureZodSchema = z.object({
   included: z
     .string({ invalid_type_error: "included must be string" })
     .optional(),
-  excluded: z.string({ invalid_type_error: "excluded must be string" }).optional(),
+  excluded: z
+    .string({ invalid_type_error: "excluded must be string" })
+    .optional(),
   amenities: z
     .string({ invalid_type_error: "amenities must be string" })
     .optional(),
@@ -70,6 +73,7 @@ export const updateToureZodSchema = z.object({
     .min(30, { message: "description to short. minimum 3 character" })
     .max(200, { message: "description cannot exceed 500 characters." })
     .optional(),
+  images: z.string({ invalid_type_error: "images must be string" }),
   location: z
     .string({ invalid_type_error: "location must be string" })
     .max(200, { message: "location cannot exceed 200 characters." })
@@ -77,8 +81,12 @@ export const updateToureZodSchema = z.object({
   costFrom: z
     .number({ invalid_type_error: "costFrom must be number" })
     .optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  startDate: z
+    .string({ invalid_type_error: "startDate must be a string" })
+    .optional(),
+  endDate: z
+    .string({ invalid_type_error: "endDate must be a string" })
+    .optional(),
   included: z
     .string({ invalid_type_error: "included must be string" })
     .optional(),
@@ -99,12 +107,16 @@ export const updateToureZodSchema = z.object({
       invalid_type_error: "minAge must be number",
     })
     .optional(),
-  division: z.string({
-    invalid_type_error: "division must be string",
-    required_error: "Division is required.",
-  }),
-  tourType: z.string({
-    invalid_type_error: "tourType must be string",
-    required_error: "Tour Type is required.",
-  }),
+  division: z
+    .string({
+      invalid_type_error: "division must be string",
+      required_error: "Division is required.",
+    })
+    .optional(),
+  tourType: z
+    .string({
+      invalid_type_error: "tourType must be string",
+      required_error: "Tour Type is required.",
+    })
+    .optional(),
 });

@@ -1,3 +1,11 @@
+import { Tour } from "../Modules/tour/tour.model";
+
+  // function to check if slug exists in DB
+export  async function isSlugExists(slug: string) {
+    const existing = await Tour.findOne({ slug });
+    return !!existing;
+  }
+
 
 
 // for division
