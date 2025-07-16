@@ -49,7 +49,7 @@ const updateUserInfo = catchAsync(
 
 
     sendResponse(res, {
-      statusCode: httpStatus.CREATED,
+      statusCode: httpStatus.OK,
       success: true,
       message: "User has been updated successfully!",
       data: user,
