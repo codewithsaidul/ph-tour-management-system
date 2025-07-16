@@ -15,8 +15,7 @@ router.post("/create-tour-type", validateRequest(createTourTypeZodSchema), chech
 
 router.get("/tour-types", chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourTypeController.getAllTourType)
 router.patch("/tour-types/:id", validateRequest(createTourTypeZodSchema), chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourTypeController.updateTourType)
-// {
-//    "name": "Dhaka Division"
-// }
+router.delete("/tour-types/:id", chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN), TourTypeController.deleteTourType)
+
 
 export const tourRouter = router;
