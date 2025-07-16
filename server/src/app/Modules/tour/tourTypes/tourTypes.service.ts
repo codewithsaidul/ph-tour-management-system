@@ -19,6 +19,13 @@ const createTourType = async (payload: Partial<ITourType>) => {
 }
 
 
+const getAllTourType = async () => {
+    const tourType = await TourType.find({});
+
+    return tourType;
+}
+
+
 
 
 
@@ -26,5 +33,5 @@ const createTourType = async (payload: Partial<ITourType>) => {
 
 
 export const TourTypeServices = {
-    createTourType
+    createTourType, getAllTourType
 }
