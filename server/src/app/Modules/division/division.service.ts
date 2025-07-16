@@ -1,5 +1,6 @@
 import { AppError } from "../../errorHelpers/AppError";
 import { slugify } from "../../utils/slug";
+import { Tour } from "../tour/tour.model";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
@@ -51,6 +52,15 @@ const updateDivision = async (
     throw new AppError(400, "This Division already exist!!!");
   }
 
+  // checking tourType linked with tour
+  const isLinked = await Tour.findOne({ division: divisionId });
+  if (isLinked) {
+    throw new AppError(
+      400,
+      "This Division is linked with a Tour. Can't delete or modify."
+    );
+  }
+
   const updateDivision = await Division.findByIdAndUpdate(divisionId, payload, {
     new: true,
     runValidators: true,
@@ -66,9 +76,18 @@ const deleteDivision = async (divisionId: string) => {
     throw new AppError(404, "This Division not found!!!");
   }
 
+  // checking tourType linked with tour
+  const isLinked = await Tour.findOne({ division: divisionId });
+  if (isLinked) {
+    throw new AppError(
+      400,
+      "This Division is linked with a Tour. Can't delete or modify."
+    );
+  }
+
   await Division.findByIdAndDelete(divisionId);
 
-  return null
+  return null;
 };
 
 export const DivisionServices = {
