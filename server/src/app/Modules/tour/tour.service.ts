@@ -1,10 +1,10 @@
+import { model, Schema, Types } from "mongoose";
 import { AppError } from "../../errorHelpers/AppError";
+import { QueryBuilder } from "../../utils/queryBuilder";
 import { isSlugExists, slugifyUnique } from "../../utils/slug";
+import { tourSearchFields } from "./tour.constant";
 import { ITour } from "./tour.interface";
 import { Tour } from "./tour.model";
-import { model, Types, Schema } from "mongoose";
-
-
 
 // ================ for testing =====================
 interface IBooking {
@@ -18,8 +18,6 @@ const bookingSchema = new Schema<IBooking>({
 });
 const Booking = model<IBooking>("Booking", bookingSchema);
 // ========================== for testing =======================
-
-
 
 const createTour = async (payload: Partial<ITour>) => {
   const uniqueSlug = await slugifyUnique(
@@ -38,26 +36,73 @@ const createTour = async (payload: Partial<ITour>) => {
   return tour;
 };
 
-const getAllTour = async (
-  page: number,
-  limit: number,
-  sortBy: string,
-  sort: string,
-  query: Record<string, string>
-) => {
-  const skip = (page - 1) * limit;
+// const getAllTourOld = async (query: Record<string, string>) => {
+//   const filter = query;
+//   const searchTerm = query.searchTerm || "";
+//   const sort = query.sort || "-createdAt";
+//   const fields = query.fields?.split(",").join(" ") || "";
+//   const page = Number(query.page) || 1;
+//   const limit = Number(query.limit) || 10;
 
-  const tour = await Tour.find(query)
-    .sort({ [sortBy]: sort === "asc" ? 1 : -1 })
-    .skip(skip)
-    .limit(limit);
-  const total = await Tour.countDocuments();
+//   const skip = (page - 1) * limit;
+
+//   for (const field of excludedFields) {
+//     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+//     delete filter[field];
+//   }
+
+//   const searchQuery = {
+//     $or: tourSearchFields.map((field) => ({
+//       [field]: { $regex: searchTerm, $options: "i" },
+//     })),
+//   };
+
+//   // const tour = await Tour.find(searchQuery).find(filter).sort(sort).select(fields).skip(skip).limit(limit);
+
+//   const filterQuery = Tour.find(filter);
+//   const tours = filterQuery.find(searchQuery);
+
+//   const allTours = await tours
+//     .sort(sort)
+//     .select(fields)
+//     .skip(skip)
+//     .limit(limit);
+
+//   const total = await Tour.countDocuments();
+
+//   const meta = {
+//     page: page,
+//     limit: limit,
+//     total: total,
+//     totalPages: Math.ceil(page / limit),
+//   };
+
+//   return {
+//     data: allTours,
+//     meta: meta,
+//   };
+// };
+
+const getAllTour = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Tour.find(), query);
+
+  const tours = queryBuilder
+    .search(tourSearchFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+
+  // const meta = await queryBuilder.getMeta();
+
+  const [ data, meta ] = await Promise.all([
+    tours.build(),
+    queryBuilder.getMeta()
+  ])
 
   return {
-    tour,
-    total,
-    page,
-    totalPages: Math.ceil(page / limit),
+    data,
+    meta,
   };
 };
 
@@ -68,7 +113,6 @@ const updateTour = async (tourId: string, payload: Partial<ITour>) => {
     throw new AppError(404, "This tour not available");
   }
 
-
   const tour = await Tour.findByIdAndUpdate(tourId, payload, {
     new: true,
     runValidators: true,
@@ -76,10 +120,6 @@ const updateTour = async (tourId: string, payload: Partial<ITour>) => {
 
   return tour;
 };
-
-
-
-
 
 const deleteTour = async (tourId: string) => {
   const isTourExist = await Tour.findById(tourId);

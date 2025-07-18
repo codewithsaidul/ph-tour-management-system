@@ -6,6 +6,8 @@ const tourSchema = new Schema<ITour>(
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     description: { type: String },
+    departureLocation: { type: String },
+    arrivalLocation: { type: String },
     images: { type: [String], default: [] },
     location: { type: String },
     costFrom: { type: Number },

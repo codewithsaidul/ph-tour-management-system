@@ -20,19 +20,8 @@ router.get(
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
   TourController.getAllTour
 );
-router.patch(
-  "/:id",
-  chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
-  validateRequest(updateToureZodSchema),
-  TourController.updateTour
-);
-router.delete(
-  "/:id",
-  chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
-  TourController.deleteTour
-);
 
-// ================== tour type
+
 router.post(
   "/create-tour-type",
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
@@ -45,6 +34,23 @@ router.get(
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
   TourTypeController.getAllTourType
 );
+
+
+
+router.patch(
+  "/:id",
+  chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
+  validateRequest(updateToureZodSchema),
+  TourController.updateTour
+);
+router.delete(
+  "/:id",
+  chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
+  TourController.deleteTour
+);
+
+
+
 router.patch(
   "/tour-types/:id",
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
@@ -57,4 +63,4 @@ router.delete(
   TourTypeController.deleteTourType
 );
 
-export const tourRouter = router;
+export const TourRouters = router;

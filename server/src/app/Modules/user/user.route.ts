@@ -18,4 +18,4 @@ router.get(
   UserController.getAllUsers
 );
 router.patch("/:id", validateRequest(updateUserZodSchema), chechAuth(...Object.values(ROLE)), UserController.updateUserInfo)
-export const userRoutes = router;
+export const UserRoutes = router;

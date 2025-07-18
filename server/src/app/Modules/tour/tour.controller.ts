@@ -20,26 +20,16 @@ const createTour = catchAsync(
 const getAllTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query
-    const page = 1;
-    const limit = 10;
-    const sortBy = "createdAt";
-    const sort = "desc";
 
-
-
-    const result = await TourServices.getAllTour(page, limit, sortBy, sort, query as Record<string, string>)
+    const result = await TourServices.getAllTour(query as Record<string, string>)
 
 
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "All Tour retrived successfully!",
-      data: result.tour,
-      meta: {
-        total: result.total,
-        page: result.page,
-        totalPages: result.totalPages
-      },
+      data: result.data,
+      meta: result.meta
     });
   }
 );
