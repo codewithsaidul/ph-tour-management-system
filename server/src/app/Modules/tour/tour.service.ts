@@ -39,14 +39,15 @@ const createTour = async (payload: Partial<ITour>) => {
 };
 
 const getAllTour = async (
-  page = 1,
-  limit = 10,
-  sortBy = "createdAt",
-  sort = "desc"
+  page: number,
+  limit: number,
+  sortBy: string,
+  sort: string,
+  query: Record<string, string>
 ) => {
   const skip = (page - 1) * limit;
 
-  const tour = await Tour.find({})
+  const tour = await Tour.find(query)
     .sort({ [sortBy]: sort === "asc" ? 1 : -1 })
     .skip(skip)
     .limit(limit);
@@ -67,23 +68,18 @@ const updateTour = async (tourId: string, payload: Partial<ITour>) => {
     throw new AppError(404, "This tour not available");
   }
 
-  let slug = isExist.slug;
-  if (payload.title) {
-    slug = await slugifyUnique(payload.title as string, 50, isSlugExists);
-  }
 
-  const updateTourData = {
-    ...payload,
-    slug,
-  };
-
-  const tour = await Tour.findByIdAndUpdate(tourId, updateTourData, {
+  const tour = await Tour.findByIdAndUpdate(tourId, payload, {
     new: true,
     runValidators: true,
   });
 
   return tour;
 };
+
+
+
+
 
 const deleteTour = async (tourId: string) => {
   const isTourExist = await Tour.findById(tourId);

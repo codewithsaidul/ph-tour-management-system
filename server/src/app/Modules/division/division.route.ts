@@ -10,9 +10,9 @@ const router = Router();
 
 
 
-router.post("/create", validateRequest(createDivisonZodSchema), chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.createDivision)
+router.post("/create", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), validateRequest(createDivisonZodSchema), DivisionController.createDivision)
 router.get("/", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.getAllDivision)
-router.patch("/:id", validateRequest(updateDivisonZodSchema), chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.updateDivision)
+router.patch("/:id", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN),  validateRequest(updateDivisonZodSchema),  DivisionController.updateDivision)
 router.delete("/:id", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), DivisionController.deleteDivision)
 
 
