@@ -1,3 +1,4 @@
+
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
@@ -5,6 +6,8 @@ import { envVars } from "../../config/env";
 import { AppError } from "../../errorHelpers/AppError";
 import { IAUTHPROVIDER, IUSER, ROLE } from "./user.interface";
 import { User } from "./user.model";
+import { QueryBuilder } from '../../utils/queryBuilder';
+import { userSearchableFields } from "./user.constant";
 
 // ===================== add new user
 const createUser = async (payload: Partial<IUSER>) => {
@@ -37,14 +40,26 @@ const createUser = async (payload: Partial<IUSER>) => {
 };
 
 // =========================== get all user
-const getAllUsers = async () => {
-  const users = await User.find({});
-  const total = await User.countDocuments();
+const getAllUsers = async (query: Record<string, string>) => {
+ const queryBuilder = new QueryBuilder(User.find(), query);
+
+  const user = queryBuilder
+    .search(userSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+
+  // const meta = await queryBuilder.getMeta();
+
+  const [ data, meta ] = await Promise.all([
+    user.build(),
+    queryBuilder.getMeta()
+  ])
+
   return {
-    data: users,
-    meta: {
-      total: total,
-    },
+    data,
+    meta,
   };
 };
 
