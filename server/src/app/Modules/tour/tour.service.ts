@@ -1,22 +1,11 @@
-import { model, Schema, Types } from "mongoose";
 import { AppError } from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { isSlugExists, slugifyUnique } from "../../utils/slug";
+import { Booking } from "../booking/booking.model";
 import { tourSearchFields } from "./tour.constant";
 import { ITour } from "./tour.interface";
 import { Tour } from "./tour.model";
 
-// ================ for testing =====================
-interface IBooking {
-  tourId: Types.ObjectId;
-}
-const bookingSchema = new Schema<IBooking>({
-  tourId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-});
-const Booking = model<IBooking>("Booking", bookingSchema);
 // ========================== for testing =======================
 
 const createTour = async (payload: Partial<ITour>) => {
@@ -91,14 +80,14 @@ const getAllTour = async (query: Record<string, string>) => {
     .filter()
     .sort()
     .fields()
-    .paginate()
+    .paginate();
 
   // const meta = await queryBuilder.getMeta();
 
-  const [ data, meta ] = await Promise.all([
+  const [data, meta] = await Promise.all([
     tours.build(),
-    queryBuilder.getMeta()
-  ])
+    queryBuilder.getMeta(),
+  ]);
 
   return {
     data,
