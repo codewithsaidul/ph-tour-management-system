@@ -1,3 +1,4 @@
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 import { AppError } from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { Tour } from "../tour/tour.model";
@@ -70,6 +71,10 @@ const updateDivision = async (
     payload,
     { new: true, runValidators: true }
   );
+
+  if (payload.thumbnail && existingDivision.thumbnail) {
+    await deleteImageFromCloudinary(existingDivision.thumbnail);
+  }
 
   return updatedDivision;
 };

@@ -8,6 +8,7 @@ import { IAUTHPROVIDER, IUSER, ROLE } from "./user.interface";
 import { User } from "./user.model";
 import { QueryBuilder } from '../../utils/queryBuilder';
 import { userSearchableFields } from "./user.constant";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 // ===================== add new user
 const createUser = async (payload: Partial<IUSER>) => {
@@ -60,6 +61,18 @@ const getAllUsers = async (query: Record<string, string>) => {
   return {
     data,
     meta,
+  };
+};
+
+
+// =========================== get all user
+const getMe = async (userId: string) => {
+
+
+  const user = await User.findById(userId).select("-password")
+ 
+  return {
+    data: user,
   };
 };
 
@@ -122,11 +135,16 @@ const updateUserInfo = async (
     runValidators: true,
   });
 
+  if (payload.picture && isUserExist.picture) {
+    await deleteImageFromCloudinary(isUserExist.picture)
+  }
+
   return updateUser;
 };
 
 export const UserServices = {
   createUser,
   getAllUsers,
+  getMe,
   updateUserInfo,
 };

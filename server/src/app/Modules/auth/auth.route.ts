@@ -3,6 +3,7 @@ import { AuthControllers } from "./auth.controller";
 import { chechAuth } from "../../middlewares/checkAuth";
 import { ROLE } from "../user/user.interface";
 import passport from "passport";
+import { envVars } from "../../config/env";
 
 
 const router = Router();
@@ -11,13 +12,16 @@ const router = Router();
 router.post("/login", AuthControllers.credentialsLogin)
 router.post("/refresh-token", AuthControllers.getNewAccessToken)
 router.post("/logout", AuthControllers.logout)
+router.post("/change-password", chechAuth(...Object.values(ROLE)), AuthControllers.changePassword)
+router.post("/set-password", chechAuth(...Object.values(ROLE)), AuthControllers.setPassword)
 router.post("/reset-password", chechAuth(...Object.values(ROLE)), AuthControllers.resetPassword)
+router.post("/forgot-password", AuthControllers.forgotPassword)
 router.get("/google", async (req: Request, res: Response, next: NextFunction) => {
     const redirect = req.query.redirect || "/"
     passport.authenticate("google", { scope: [ "profile", "email" ], state: redirect as string })(req, res, next)
 })
 
 
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login"}), AuthControllers.googleCallbackController)
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: `${envVars.FRONTEND_URL}/login?error=There are some issues with your account. Please contact with our support team`}), AuthControllers.googleCallbackController)
 
 export const AuthRouters = router

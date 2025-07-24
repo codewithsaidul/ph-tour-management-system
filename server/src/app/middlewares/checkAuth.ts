@@ -4,11 +4,8 @@ import { AppError } from "../errorHelpers/AppError";
 import { verifyToken } from "../utils/jwt";
 import { envVars } from "../config/env";
 import { User } from "../Modules/user/user.model";
-import httpStatus from "http-status-codes"
+import httpStatus from "http-status-codes";
 import { IsActive } from "../Modules/user/user.interface";
-
-
-
 
 export const chechAuth =
   (...authRoles: string[]) =>
@@ -36,6 +33,13 @@ export const chechAuth =
       throw new AppError(httpStatus.NOT_FOUND, "User doesn't exist");
     }
 
+    if (!isUserExist.isVerified) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Youre not verifed. Please verify first!"
+      );
+    }
+
     if (
       isUserExist.isActive === IsActive.BLOCKED ||
       isUserExist.isActive === IsActive.INACTIVE
@@ -47,7 +51,7 @@ export const chechAuth =
     }
 
     if (isUserExist.isDeleted) {
-      throw new AppError(httpStatus.NOT_FOUND, "User deleted");
+      throw new AppError(httpStatus.NOT_FOUND, "User is deleted");
     }
 
     req.user = verifiedToken;

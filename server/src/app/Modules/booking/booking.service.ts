@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AppError } from "../../errorHelpers/AppError";
+import { getTransactionId } from "../../utils/getTransactionId";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { PaymentStatus } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
@@ -10,9 +11,7 @@ import { User } from "../user/user.model";
 import { BookingStatus, IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-};
+
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
   const transactionId = getTransactionId();

@@ -4,11 +4,16 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { DivisionServices } from "./division.service";
-
+import { IDivision } from "./division.interface";
 
 const createDivision = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const division = await DivisionServices.createDivision(req.body);
+    const payload: IDivision = {
+      ...req.body,
+      thumbnail: req?.file?.path,
+    };
+
+    const division = await DivisionServices.createDivision(payload);
 
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -19,10 +24,11 @@ const createDivision = catchAsync(
   }
 );
 
-
 const getAllDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await DivisionServices.getAllDivision(req.query as Record<string, string>);
+    const result = await DivisionServices.getAllDivision(
+      req.query as Record<string, string>
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -34,10 +40,9 @@ const getAllDivision = catchAsync(
   }
 );
 
-
 const getSingleDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const slug = req.params.slug as string
+    const slug = req.params.slug as string;
     const result = await DivisionServices.getSingleDivision(slug);
 
     sendResponse(res, {
@@ -49,12 +54,19 @@ const getSingleDivision = catchAsync(
   }
 );
 
-
 const updateDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const divisionId = req.params.id
-    const divisionData = req.body
-    const division = await DivisionServices.updateDivision(divisionId, divisionData);
+    const divisionId = req.params.id;
+
+    const payload: IDivision = {
+      ...req.body,
+      thumbnail: req?.file?.path,
+    };
+
+    const division = await DivisionServices.updateDivision(
+      divisionId,
+      payload
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -65,10 +77,9 @@ const updateDivision = catchAsync(
   }
 );
 
-
 const deleteDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const divisionId = req.params.id
+    const divisionId = req.params.id;
     const division = await DivisionServices.deleteDivision(divisionId);
 
     sendResponse(res, {
@@ -80,8 +91,10 @@ const deleteDivision = catchAsync(
   }
 );
 
-
-
 export const DivisionController = {
-    createDivision, getAllDivision, getSingleDivision, updateDivision, deleteDivision
-}
+  createDivision,
+  getAllDivision,
+  getSingleDivision,
+  updateDivision,
+  deleteDivision,
+};

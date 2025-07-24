@@ -6,12 +6,14 @@ import { TourController } from "./tour.controller";
 import { createToureZodSchema, updateToureZodSchema } from "./tour.validation";
 import { TourTypeController } from "./tourTypes/tourTypes.controller";
 import { createTourTypeZodSchema } from "./tourTypes/tourTypes.validation";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
 router.post(
   "/create",
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
+  multerUpload.array("files"),
   validateRequest(createToureZodSchema),
   TourController.createTour
 );
@@ -40,6 +42,7 @@ router.get(
 router.patch(
   "/:id",
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),
+  multerUpload.array("files"),
   validateRequest(updateToureZodSchema),
   TourController.updateTour
 );
@@ -57,6 +60,7 @@ router.patch(
   validateRequest(createTourTypeZodSchema),
   TourTypeController.updateTourType
 );
+
 router.delete(
   "/tour-types/:id",
   chechAuth(ROLE.SUPER_ADMIN, ROLE.ADMIN),

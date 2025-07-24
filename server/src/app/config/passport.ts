@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import bcrypt from "bcryptjs";
 import passport from "passport";
 import {
   Strategy as GoogleStrategy,
@@ -6,10 +7,9 @@ import {
   VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as LocalStrategy } from "passport-local";
-import { ROLE } from "../Modules/user/user.interface";
+import { IsActive, ROLE } from "../Modules/user/user.interface";
 import { User } from "../Modules/user/user.model";
 import { envVars } from "./env";
-import bcrypt from "bcryptjs";
 
 // ========================= setup custom login authentication
 passport.use(
@@ -26,12 +26,41 @@ passport.use(
           return done(null, false, { message: "User doesn't exist" });
         }
 
+        if (!isUserExist.isVerified) {
+          // throw new AppError(
+          //   httpStatus.BAD_REQUEST,
+          //   "Youre not verifed. Please verify first!"
+          // );
+          return done(null, false, {
+            message: "Youre not verifed. Please verify first!",
+          });
+        }
+
+        if (
+          isUserExist.isActive === IsActive.BLOCKED ||
+          isUserExist.isActive === IsActive.INACTIVE
+        ) {
+          // throw new AppError(
+          //   httpStatus.NOT_FOUND,
+          //   `User has been ${isUserExist.isActive}. contact with our team`
+          // );
+          return done(null, false, {
+            message: `User has been ${isUserExist.isActive}. contact with our team`,
+          });
+        }
+
+        if (isUserExist.isDeleted) {
+          // throw new AppError(httpStatus.NOT_FOUND, "User deleted");
+          return done(null, false, { message: "User is deleted" });
+        }
+
         const isGoogleAuthenticatior = isUserExist.auths.some(
           (providerObject) => providerObject.provider === "google"
         );
 
         if (isGoogleAuthenticatior && !isUserExist.password) {
-          return done("Your account was created using Google. To log in, please click the 'Continue with Google' button. If you'd like to log in with a password, please set one first by using the 'Set Password?' option in your account.",
+          return done(
+            "Your account was created using Google. To log in, please click the 'Continue with Google' button. If you'd like to log in with a password, please set one first by using the 'Set Password?' option in your account."
           );
         }
 
@@ -44,7 +73,9 @@ passport.use(
           return done(null, false, { message: "Incorrect Password" });
         }
 
-        return done(null, isUserExist, { message: "User Logged In successfully!"});
+        return done(null, isUserExist, {
+          message: "User Logged In successfully!",
+        });
       } catch (error) {
         done(error);
       }
@@ -69,14 +100,35 @@ passport.use(
       try {
         const email = profile?.emails?.[0]?.value;
 
+
         if (!email) {
           return done(null, false, { message: "email not found" });
         }
 
-        let user = await User.findOne({ email });
+        let isUserExist = await User.findOne({ email });
 
-        if (!user) {
-          user = await User.create({
+        if (isUserExist && !isUserExist.isVerified) {
+          return done(null, false, {
+            message: "Youre not verifed. Please verify first!",
+          });
+        }
+
+        if (
+          isUserExist &&
+          (isUserExist.isActive === IsActive.BLOCKED ||
+            isUserExist.isActive === IsActive.INACTIVE)
+        ) {
+          return done(null, false, {
+            message: `User has been ${isUserExist.isActive}. contact with our team`,
+          });
+        }
+
+        if (isUserExist && isUserExist.isDeleted) {
+          return done(null, false, { message: "User is deleted" });
+        }
+
+        if (!isUserExist) {
+          isUserExist = await User.create({
             name: profile.displayName,
             email,
             picture: profile?.photos?.[0]?.value,
@@ -91,7 +143,7 @@ passport.use(
           });
         }
 
-        return done(null, user);
+        return done(null, isUserExist);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error);

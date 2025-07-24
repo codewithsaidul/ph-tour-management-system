@@ -12,6 +12,7 @@ export const setAuthCookie = (res: Response, tokenInfo: AuthToken) => {
       secure: false,
     });
   }
+  
 
   if (tokenInfo.refreshToken) {
     res.cookie("refreshToken", tokenInfo.refreshToken, {
