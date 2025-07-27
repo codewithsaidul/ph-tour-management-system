@@ -34,4 +34,5 @@ export interface IUSER {
     role: ROLE;
     booking?: Types.ObjectId[];
     guides?: Types.ObjectId[];
+    createdAt?: Date;
 }

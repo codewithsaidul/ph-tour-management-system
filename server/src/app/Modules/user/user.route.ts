@@ -30,5 +30,7 @@ router.get(
 );
 
 
+router.get("/:id", chechAuth(ROLE.ADMIN, ROLE.SUPER_ADMIN), UserController.updateUserInfo)
+
 router.patch("/:id", chechAuth(...Object.values(ROLE)), multerUpload.single("file"), validateRequest(updateUserZodSchema), UserController.updateUserInfo)
 export const UserRoutes = router;

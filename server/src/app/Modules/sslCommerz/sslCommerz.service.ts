@@ -44,7 +44,6 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       data: data,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
-
     return res.data;
   } catch {
     throw new AppError(400, "tor payment a problem hoise");

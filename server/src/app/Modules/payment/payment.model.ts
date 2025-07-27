@@ -29,7 +29,10 @@ const paymentSchema = new Schema<IPayment>({
     paymentGateWayData: {
         type: Schema.Types.Mixed
     },
-    invocieUrl: {
+    invoiceNumber: {
+        type: Number
+    },
+    invoiceUrl: {
         type: String
     }
 }, {
